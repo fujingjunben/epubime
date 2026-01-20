@@ -380,6 +380,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -455,12 +456,12 @@ public class SmartContentExtractor {
     }
 
     private void processChaptersRecursively(EpubBookEnhanced book, List<EpubChapter> chapters,
-                                          List<ChapterContent> result, int level) {
+                                            List<ChapterContent> result, int level) {
         for (EpubChapter chapter : chapters) {
             ChapterContent content = new ChapterContent();
             content.title = chapter.getTitle();
             content.level = level;
-            content.href = chapter.getContent();
+            content.href = chapter.getPath();
 
             // 提取章节内容
             try {
@@ -730,7 +731,7 @@ public class ExtractorExample {
 
                         for (SmartContentExtractor.ChapterContent chapter : structure.chapters) {
                             System.out.println("  ".repeat(chapter.level) + chapter.title +
-                                             " (" + chapter.paragraphs.size() + " 段)");
+                                    " (" + chapter.paragraphs.size() + " 段)");
                         }
                     })
                     .join();
@@ -739,7 +740,7 @@ public class ExtractorExample {
             extractor.searchContent(epubFile, "重要", false)
                     .thenAccept(results -> {
                         System.out.println("在《" + results.bookTitle + "》中找到 " +
-                                         results.matches.size() + " 处匹配 \"" + results.query + "\"");
+                                results.matches.size() + " 处匹配 \"" + results.query + "\"");
 
                         for (int i = 0; i < Math.min(5, results.matches.size()); i++) {
                             SmartContentExtractor.SearchResult match = results.matches.get(i);

@@ -380,6 +380,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -455,12 +456,12 @@ public class SmartContentExtractor {
     }
 
     private void processChaptersRecursively(EpubBookEnhanced book, List<EpubChapter> chapters,
-                                          List<ChapterContent> result, int level) {
+                                            List<ChapterContent> result, int level) {
         for (EpubChapter chapter : chapters) {
             ChapterContent content = new ChapterContent();
             content.title = chapter.getTitle();
             content.level = level;
-            content.href = chapter.getContent();
+            content.href = chapter.getPath();
 
             // Extract chapter content
             try {
@@ -730,7 +731,7 @@ public class ExtractorExample {
 
                         for (SmartContentExtractor.ChapterContent chapter : structure.chapters) {
                             System.out.println("  ".repeat(chapter.level) + chapter.title +
-                                             " (" + chapter.paragraphs.size() + " paragraphs)");
+                                    " (" + chapter.paragraphs.size() + " paragraphs)");
                         }
                     })
                     .join();
@@ -739,7 +740,7 @@ public class ExtractorExample {
             extractor.searchContent(epubFile, "important", false)
                     .thenAccept(results -> {
                         System.out.println("Found " + results.matches.size() + " matches for \"" +
-                                         results.query + "\" in '" + results.bookTitle + "'");
+                                results.query + "\" in '" + results.bookTitle + "'");
 
                         for (int i = 0; i < Math.min(5, results.matches.size()); i++) {
                             SmartContentExtractor.SearchResult match = results.matches.get(i);

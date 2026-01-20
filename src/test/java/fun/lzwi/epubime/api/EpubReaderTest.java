@@ -1,23 +1,25 @@
 package fun.lzwi.epubime.api;
 
 import fun.lzwi.epubime.ResUtils;
-import fun.lzwi.epubime.epub.EpubBook;
-import fun.lzwi.epubime.epub.EpubChapter;
-import fun.lzwi.epubime.epub.EpubResource;
-import fun.lzwi.epubime.epub.Metadata;
+import fun.lzwi.epubime.epub.*;
 import fun.lzwi.epubime.exception.BaseEpubException;
+import fun.lzwi.epubime.exception.EpubPathValidationException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -254,7 +256,7 @@ public class EpubReaderTest {
         List<EpubChapter> allChapters = enhancedBook.getAllChapters();
         if (!allChapters.isEmpty()) {
             EpubChapter testChapter = allChapters.get(0);
-            if (testChapter.getContent() != null) {
+            if (testChapter.getPath() != null) {
                 // Test processChapterContent
                 try {
                     enhancedBook.processChapterContent(testChapter, inputStream -> {
@@ -732,5 +734,57 @@ public class EpubReaderTest {
         }
 
         // Both should have processed resources (counts may differ due to parallel vs sequential)
+    }
+
+    @Test
+    public void testParseChapter() throws EpubPathValidationException, BaseEpubException, IOException {
+        File epubFile = ResUtils.getFileFromRes("fun/lzwi/epubime/epub/test.epub");
+
+        EpubBook book = new EpubParser(epubFile).parse();
+        EpubBookEnhanced enhancedBook = new EpubBookEnhanced(book, epubFile);
+
+        List<String> content = enhancedBook.getAllChapters().stream().map(epubChapter ->
+                extractTextWithoutFurigana(enhancedBook.getChapterContentAsString(epubChapter))
+        ).collect(Collectors.toList());
+        for (String line: content) {
+            System.out.println(line);
+        }
+    }
+
+    private String parseChapter(String html) {
+        System.out.println(html);
+
+        Document doc = Jsoup.parse(html);
+        return doc.select("p").text();
+    }
+
+    public String extractTextWithoutFurigana(String html) {
+        Document doc = Jsoup.parse(html);
+        StringBuilder extractedText = new StringBuilder();
+
+        // 1. Select all <rt> elements (the furigana) within the document
+        Elements rubyTextElements = doc.select("rt");
+
+        // 2. Remove all the selected <rt> elements from the Document.
+        // This mutates the 'doc' object, leaving only the base text in the <ruby> tags.
+        rubyTextElements.remove();
+
+        // 3. Select all <p> elements as before
+        Elements paragraphs = doc.select("p");
+
+        // 4. Iterate and extract the combined text
+        for (Element p : paragraphs) {
+            // Use .text() on the remaining structure.
+            // For <ruby>檻<rt>おり</rt></ruby>, removing <rt> leaves <ruby>檻</ruby>.
+            // .text() extracts just "檻".
+            String pText = p.text().trim();
+
+            // Skip empty paragraphs that only contained <br class="main"/>
+            if (!pText.isEmpty()) {
+                extractedText.append(pText).append("\n"); // Add a newline for separation
+            }
+        }
+
+        return extractedText.toString().trim();
     }
 }

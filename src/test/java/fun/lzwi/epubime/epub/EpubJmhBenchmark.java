@@ -2,10 +2,6 @@ package fun.lzwi.epubime.epub;
 
 import fun.lzwi.epubime.ResUtils;
 import fun.lzwi.epubime.cache.EpubCacheManager;
-import fun.lzwi.epubime.epub.EpubBook;
-import fun.lzwi.epubime.epub.EpubChapter;
-import fun.lzwi.epubime.epub.EpubResource;
-import fun.lzwi.epubime.epub.Metadata;
 import fun.lzwi.epubime.zip.ZipFileManager;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
@@ -81,8 +77,8 @@ public class EpubJmhBenchmark {
         String firstChapterContent = null;
         if (!chapters.isEmpty()) {
             EpubChapter firstChapter = chapters.get(0);
-            if (firstChapter.getContent() != null) {
-                firstChapterContent = epubimeFileReader.readContent(firstChapter.getContent());
+            if (firstChapter.getPath() != null) {
+                firstChapterContent = epubimeFileReader.readContent(firstChapter.getPath());
             }
         }
 

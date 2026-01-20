@@ -160,7 +160,7 @@ public class EpubReader {
 
         // Stream the chapter content
         EpubStreamProcessor streamProcessor = new EpubStreamProcessor(epubFile);
-        streamProcessor.processHtmlChapter(targetChapter.getContent(), processor);
+        streamProcessor.processHtmlChapter(targetChapter.getPath(), processor);
     }
     
     /**

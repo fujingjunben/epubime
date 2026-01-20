@@ -88,8 +88,8 @@ public class EpubBookEnhanced {
      */
     public List<EpubChapter> findChaptersByContentPattern(String pattern) {
         return getAllChapters().stream()
-                .filter(chapter -> chapter.getContent() != null && 
-                                 chapter.getContent().contains(pattern))
+                .filter(chapter -> chapter.getPath() != null &&
+                                 chapter.getPath().contains(pattern))
                 .collect(Collectors.toList());
     }
     
@@ -216,7 +216,7 @@ public class EpubBookEnhanced {
      */
     public void processChapterContent(EpubChapter chapter, Consumer<InputStream> processor) 
             throws BaseEpubException {
-        if (chapter == null || chapter.getContent() == null) {
+        if (chapter == null || chapter.getPath() == null) {
             throw new EpubResourceException("Invalid chapter or chapter content", 
                     epubFile.getName(), "unknown", null);
         }
@@ -224,10 +224,10 @@ public class EpubBookEnhanced {
         try {
             // Use the streaming processor
             EpubStreamProcessor streamProcessor = new EpubStreamProcessor(epubFile);
-            streamProcessor.processHtmlChapter(chapter.getContent(), processor);
+            streamProcessor.processHtmlChapter(chapter.getPath(), processor);
         } catch (BaseEpubException | EpubPathValidationException e) {
             throw new EpubResourceException("Failed to process chapter content",
-                    epubFile.getName(), chapter.getContent(), e);
+                    epubFile.getName(), chapter.getPath(), e);
         }
     }
     
@@ -237,7 +237,7 @@ public class EpubBookEnhanced {
      * @return chapter content as string, or null if failed
      */
     public String getChapterContentAsString(EpubChapter chapter) {
-        if (chapter == null || chapter.getContent() == null) {
+        if (chapter == null || chapter.getPath() == null) {
             return null;
         }
         

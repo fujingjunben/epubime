@@ -2,9 +2,11 @@ package fun.lzwi.epubime.epub;
 
 import fun.lzwi.epubime.ResUtils;
 import fun.lzwi.epubime.exception.BaseEpubException;
+import fun.lzwi.epubime.exception.EpubPathValidationException;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.BiConsumer;
 
@@ -267,4 +269,6 @@ public class EpubBookTest {
         }
 
     }
+
+
 }

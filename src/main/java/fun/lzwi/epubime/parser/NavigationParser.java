@@ -115,7 +115,7 @@ public class NavigationParser {
 
         Element content = XmlUtils.selectFirst(navPoint, "content");
         if (content != null) {
-            chapter.setContent(XmlUtils.getAttribute(content, "src"));
+            chapter.setPath(XmlUtils.getAttribute(content, "src"));
         }
 
         // 递归处理嵌套的navPoint - 只处理直接子元素
@@ -287,7 +287,7 @@ public class NavigationParser {
                 }
                 
                 chapter.setTitle(XmlUtils.getText(link));
-                chapter.setContent(XmlUtils.getAttribute(link, "href"));
+                chapter.setPath(XmlUtils.getAttribute(link, "href"));
             }
             
             // 查找嵌套列表（子章节）

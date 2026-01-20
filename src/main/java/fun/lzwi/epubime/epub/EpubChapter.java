@@ -12,6 +12,7 @@ public class EpubChapter {
     private String id;
     private String title;
     private String content;
+    private String path;
     private List<EpubChapter> children; // 子章节列表
 
     public EpubChapter() {
@@ -26,6 +27,7 @@ public class EpubChapter {
         this.id = other.id;
         this.title = other.title;
         this.content = other.content;
+        this.path = other.path;
         if (other.children != null) {
             this.children = new ArrayList<>(other.children.size());
             for (EpubChapter child : other.children) {
@@ -40,14 +42,22 @@ public class EpubChapter {
      * 获取章节内容路径
      * @return 章节内容路径
      */
+    public String getPath() {
+        return path;
+    }
+
     public String getContent() {
         return content;
     }
 
     /**
      * 设置章节内容路径
-     * @param content 章节内容路径
+     * @param path 章节内容路径
      */
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public void setContent(String content) {
         this.content = content;
     }

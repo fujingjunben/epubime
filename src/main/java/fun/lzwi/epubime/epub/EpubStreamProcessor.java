@@ -61,12 +61,12 @@ public class EpubStreamProcessor {
 
         for (EpubChapter chapter : chapters) {
             try {
-                processHtmlChapter(chapter.getContent(), inputStream -> processor.accept(chapter, inputStream));
+                processHtmlChapter(chapter.getPath(), inputStream -> processor.accept(chapter, inputStream));
             } catch (Exception e) {
-                throw new EpubResourceException("Failed to process chapter: " + chapter.getContent(),
+                throw new EpubResourceException("Failed to process chapter: " + chapter.getPath(),
                                                 book.getResources().isEmpty() ? null :
                                                 book.getResources().get(0).getEpubFile().getName(),
-                                                chapter.getContent(), e);
+                                                chapter.getPath(), e);
             }
         }
     }
@@ -103,8 +103,8 @@ public class EpubStreamProcessor {
      */
     private boolean isChapterResource(EpubResource resource, EpubBook book) {
         return book.getChapters().stream()
-                .anyMatch(chapter -> chapter.getContent() != null &&
-                           chapter.getContent().equals(resource.getHref()));
+                .anyMatch(chapter -> chapter.getPath() != null &&
+                           chapter.getPath().equals(resource.getHref()));
     }
 
     /**
